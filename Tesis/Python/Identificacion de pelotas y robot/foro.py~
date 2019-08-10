@@ -1,0 +1,31 @@
+#!/usr/bin/python
+
+import cv2
+import numpy as np
+
+def main():
+    image = cv2.imread("prueba.png")
+    imageMat = cv2.cv.fromarray(image)
+    dst = cv2.cv.fromarray(np.zeros((imageMat.rows, imageMat.cols), np.uint8))
+
+    x = 250 # Manually set pixel location. You can get this from your mouse event handler.
+    y = 500
+    pixel = image[y, x] # Note y index "row" of matrix and x index "col".
+    tolerance = 10
+    # Ensure your bounds are within 0 and 255.
+    lower = tuple(map(lambda x: int(max(0, x - tolerance)), pixel))
+    upper = tuple(map(lambda x: int(min(255, x + tolerance)), pixel))
+    # Get mask of all pixels that satisfy range condition and store it in dst.
+    cv2.cv.InRangeS(imageMat, lower, upper, dst)
+
+    mask = np.asarray(dst) # Convert back to numpy array.
+    cv2.imshow("Mask", mask) # The mask indicating which pixels satisfy range conditions
+    cv2.imshow("Image", image)
+    extracted = np.zeros_like(image) # The pixels that satisfy range condition.
+    extracted[np.where(mask)] = image[np.where(mask)]
+    cv2.imshow("extracted", extracted)
+
+    cv2.waitKey()
+
+if __name__ == "__main__":
+    main()

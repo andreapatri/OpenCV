@@ -1,0 +1,160 @@
+#include<stdio.h>
+#include<math.h>
+#include <stdlib.h>
+
+main()
+
+{
+  int i,j;
+  int k=0;
+  signed int dif = 0;
+  float dist[6];
+  int coord[]={50,50,50,50,400,50,50,50};
+  int m_coord[4][2];
+  float m_dist[6][3];
+  int n=0;
+  
+//Conversion del .xml a una matriz e impresion de esta
+  printf("Coordenadas: \n");
+  printf("             x     y \n");
+  for(i=0;i<4;i++)
+    {
+    if(i==0)
+       printf("Robot  0:  "); 
+    else
+       printf("Pelota %d:  ",i); 
+    for(j=0;j<2;j++)
+      {
+       m_coord[i][j]=coord[k];
+       printf(" %d  ",m_coord[i][j]);
+       k++;
+      }
+     printf("\n");   
+    }  
+
+//Distancias entre cada par de puntos y creacion de la matriz de distancias
+  for(i=1;i<=3;i++)
+    {
+    dif=((m_coord[0][0]-m_coord[i][0])*(m_coord[0][0]-m_coord[i][0]))+
+        ((m_coord[0][1]-m_coord[i][1])*(m_coord[0][1]-m_coord[i][1]));    
+    m_dist[n][2]=sqrt(dif);
+    m_dist[n][1]=i;
+    m_dist[n][0]=0;
+    n++;
+    } 
+  for(i=2;i<=3;i++)
+    {
+    dif=((m_coord[1][0]-m_coord[i][0])*(m_coord[1][0]-m_coord[i][0]))+
+        ((m_coord[1][1]-m_coord[i][1])*(m_coord[1][1]-m_coord[i][1]));    
+    m_dist[n][2]=sqrt(dif);
+    m_dist[n][1]=i;
+    m_dist[n][0]=1;
+    n++;
+    }  
+    dif=((m_coord[2][0]-m_coord[3][0])*(m_coord[2][0]-m_coord[3][0]))+
+        ((m_coord[2][1]-m_coord[3][1])*(m_coord[2][1]-m_coord[3][1]));    
+    m_dist[5][2]=sqrt(dif);
+    m_dist[5][1]=3;
+    m_dist[5][0]=2;    
+
+//Impresion de la matriz de distancias entre cada par de puntos   
+  printf("\nDistancias entre puntos \n");
+  printf("Punto Inicial     Punto Final        Distancia\n");      
+    
+  for(i=0;i<6;i++)
+    {
+    for(j=0;j<3;j++)
+      {
+       printf(" %f         ",m_dist[i][j]);
+      }
+    printf("\n");  
+    }      
+     
+//Secuencia con la cual el recorrido será el menor
+//Hallar la distancias para las secuencias:
+//  0  1  2  3  0
+//  0  1  3  2  0
+//  0  2  1  3  0
+float m_sec[3][5]={0,1,2,3,0,0,1,3,2,0,0,2,1,3,0};
+float suma[3]={0,0,0};
+
+  for(i=0;i<3;i++)//fila de m_sec
+    {
+    for(j=0;j<5;j++)//columna de m_sec
+      {
+      for(k=0;k<6;k++)//fila de m_dist
+	{
+	if(  (m_sec[i][j]==m_dist[k][0] && m_sec[i][j+1]==m_dist[k][1]) 
+	  || (m_sec[i][j]==m_dist[k][1] && m_sec[i][j+1]==m_dist[k][0]))
+	  {
+	  suma[i]=suma[i]+m_dist[k][2];
+	  }
+	}
+	
+      }
+      
+    } 
+
+
+ printf("\nSumatoria de cada una de las secuencias:   \n",suma[i]);
+  for(i=0;i<3;i++)
+    {
+    printf(" %f  \n",suma[i]);
+    }
+    
+//Trayectoria más corta       
+int menor=0; 
+    if(suma[0]<suma[1])
+      {
+      if(suma[0]<suma[2])
+        menor=0;	    
+      else
+	menor=2;
+      }
+    else
+      {
+      if(suma[1]<suma[2])
+	menor=1;
+      else
+	menor=2;
+      }
+
+//Impresion de la secuencia mas corta
+  int secuencia[5];
+  printf("\nMenor secuencia:   \n");
+  for(j=0;j<5;j++)
+    {
+    secuencia[j]=m_sec[menor][j];  
+    printf(" %d   ",secuencia[j]);
+    }
+  printf("\nQue corresponde a una distancia de: %f \n\n", suma[menor]);
+
+//Secuencia de coordenadas
+int m_sec_coord[5][2];
+    i=0;
+    for(j=0;j<5;j++)
+      {
+      for(k=0;k<2;k++)
+	{
+	m_sec_coord[j][k]=m_coord[secuencia[i]][k];
+	}
+	i++;
+      }
+
+
+    
+//Impresion de la Secuencia de coordenadas    
+  printf("Orden de coordenadas para recorrer la menor distancia: \n"); 
+  printf("   x      y \n");
+    for(i=0;i<5;i++)
+    {
+      for(j=0;j<2;j++)
+      {
+      printf("  %d  ", m_sec_coord[i][j]);           
+      }
+      printf("\n");           
+    }
+system("pause");
+//return 0;    
+    
+}

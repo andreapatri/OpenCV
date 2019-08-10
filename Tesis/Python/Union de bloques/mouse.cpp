@@ -1,0 +1,68 @@
+ 
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <stdio.h>
+
+using namespace cv;
+
+//http://bsd-noobz.com/opencv-guide/45-3-using-mouse
+Mat img;
+
+int click=1;
+int cord_x[4];
+int cord_y[4];
+
+
+void onMouse(int event, int x, int y, int flags, void* param)
+{
+    char text[20];
+    Mat img2, img3;
+    img2 = img.clone();
+    if(click < 5)
+    {  
+    if (event == CV_EVENT_LBUTTONDOWN)
+	{
+        Vec3b p = img2.at<Vec3b>(y,x);
+	printf( "Cordenada %d:  x=%d, y=%d  \n", click, x, y);
+	cord_x[click]=x;
+	cord_y[click]=y;
+    	sprintf(text, "R=%d, G=%d, B=%d", p[2], p[1], p[0]);
+      	click=click+1;
+	}
+    else if (event == CV_EVENT_RBUTTONDOWN)
+	{
+        click=1;
+	printf( "Vuelva a ingresar las coordenadas \n");
+	}
+    else
+	{
+        sprintf(text, "x=%d, y=%d", x, y);
+	}
+    putText(img2, text, Point(5,15), FONT_HERSHEY_PLAIN, 1.0, CV_RGB(255,0,0));
+    imshow("image", img2);
+    }
+    else
+     {
+	
+	printf("1 %d, %d \n",cord_x[1] , cord_y[1]);
+ 	printf("2 %d, %d \n",cord_x[2] , cord_y[2]);
+ 	printf("3 %d, %d \n",cord_x[3] , cord_y[3]);
+ 	printf("4 %d, %d \n",cord_x[4] , cord_y[4]);
+     }
+}
+
+
+int main(int argc, char** argv)
+{
+    img = imread(argc == 2 ? argv[1] : "7.png");
+    if (img.empty())
+        return -1;
+        
+    namedWindow("image");
+    setMouseCallback("image", onMouse, 0);
+    imshow("image", img);
+    waitKey(0);
+
+
+    return 0;
+}
